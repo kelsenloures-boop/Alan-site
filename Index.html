@@ -1,0 +1,449 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>🎬 Galeria de Mídia Ultimate</title>
+
+  <!-- Ícones -->
+  <link href="https://cdn.jsdelivr.net/npm/remixicon/fonts/remixicon.css" rel="stylesheet">
+
+  <style>
+    /* ======== ESTILO GERAL ======== */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Poppins', sans-serif;
+      background: radial-gradient(circle at 30% 30%, #1a1a2e, #0f0f23 80%);
+      color: #fff;
+      min-height: 100vh;
+      padding: 20px;
+      overflow-x: hidden;
+    }
+
+    .container {
+      max-width: 1300px;
+      margin: 0 auto;
+      padding: 20px;
+    }
+
+    header {
+      text-align: center;
+      margin-bottom: 40px;
+    }
+
+    header h1 {
+      font-size: 3rem;
+      background: linear-gradient(90deg, #667eea, #764ba2);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      font-weight: 700;
+    }
+
+    header p {
+      color: rgba(255, 255, 255, 0.8);
+      margin-top: 8px;
+    }
+
+    /* ======== ÁREA DE UPLOAD ======== */
+    .upload-area {
+      background: rgba(255, 255, 255, 0.06);
+      border: 2px dashed rgba(255, 255, 255, 0.3);
+      border-radius: 20px;
+      padding: 60px;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.4s ease;
+      backdrop-filter: blur(10px);
+      margin-bottom: 35px;
+    }
+
+    .upload-area:hover {
+      border-color: #667eea;
+      background: rgba(255, 255, 255, 0.1);
+      transform: translateY(-3px);
+      box-shadow: 0 8px 30px rgba(102, 126, 234, 0.3);
+    }
+
+    .upload-area i {
+      font-size: 3rem;
+      color: #667eea;
+      margin-bottom: 10px;
+    }
+
+    #file-input {
+      display: none;
+    }
+
+    /* ======== BARRA DE FERRAMENTAS ======== */
+    .toolbar {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: center;
+      gap: 15px;
+      margin-bottom: 30px;
+    }
+
+    .filter-buttons {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .filter-btn {
+      border: none;
+      border-radius: 30px;
+      padding: 10px 22px;
+      font-weight: 600;
+      color: #fff;
+      background: rgba(255, 255, 255, 0.1);
+      cursor: pointer;
+      transition: all 0.3s ease;
+      backdrop-filter: blur(10px);
+    }
+
+    .filter-btn.active, .filter-btn:hover {
+      background: linear-gradient(135deg, #667eea, #764ba2);
+      box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+    }
+
+    .search-box {
+      position: relative;
+      flex: 1;
+      min-width: 250px;
+    }
+
+    .search-input {
+      width: 100%;
+      padding: 12px 45px 12px 20px;
+      border-radius: 25px;
+      border: 1px solid rgba(255, 255, 255, 0.3);
+      background: rgba(255, 255, 255, 0.1);
+      color: white;
+      font-size: 1rem;
+      backdrop-filter: blur(8px);
+      transition: all 0.3s ease;
+    }
+
+    .search-input::placeholder {
+      color: rgba(255, 255, 255, 0.6);
+    }
+
+    .search-input:focus {
+      outline: none;
+      border-color: #667eea;
+      box-shadow: 0 0 10px rgba(102, 126, 234, 0.5);
+    }
+
+    .search-icon {
+      position: absolute;
+      right: 15px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: rgba(255, 255, 255, 0.6);
+    }
+
+    .view-controls {
+      display: flex;
+      gap: 10px;
+    }
+
+    .view-btn, .sort-select {
+      padding: 10px 14px;
+      border-radius: 10px;
+      border: 1px solid rgba(255,255,255,0.2);
+      background: rgba(255,255,255,0.1);
+      color: white;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .view-btn.active, .view-btn:hover {
+      background: rgba(255,255,255,0.2);
+    }
+
+    .sort-select {
+      border-radius: 20px;
+    }
+
+    /* ======== GALERIA ======== */
+    .gallery {
+      display: grid;
+      gap: 25px;
+    }
+
+    .gallery.grid-view {
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    }
+
+    .gallery.list-view {
+      grid-template-columns: 1fr;
+    }
+
+    .media-item {
+      background: rgba(255,255,255,0.06);
+      border-radius: 20px;
+      overflow: hidden;
+      transition: all 0.4s ease;
+      backdrop-filter: blur(15px);
+      border: 1px solid rgba(255,255,255,0.1);
+      animation: fadeIn 0.5s ease;
+      position: relative;
+    }
+
+    .media-item:hover {
+      transform: translateY(-8px) scale(1.02);
+      box-shadow: 0 15px 40px rgba(102, 126, 234, 0.4);
+      border-color: rgba(102,126,234,0.5);
+    }
+
+    .video-container, .audio-container {
+      width: 100%;
+      height: 220px;
+      overflow: hidden;
+      position: relative;
+    }
+
+    video, audio {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .media-info {
+      padding: 20px;
+    }
+
+    .media-title {
+      font-weight: 600;
+      font-size: 1.1rem;
+      margin-bottom: 6px;
+    }
+
+    .media-description {
+      color: rgba(255,255,255,0.7);
+      font-size: 0.9rem;
+      line-height: 1.5;
+    }
+
+    .action-buttons {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      display: flex;
+      gap: 8px;
+      opacity: 0;
+      transition: all 0.3s ease;
+    }
+
+    .media-item:hover .action-buttons {
+      opacity: 1;
+    }
+
+    .action-btn {
+      background: rgba(0,0,0,0.7);
+      border: none;
+      border-radius: 50%;
+      width: 38px;
+      height: 38px;
+      color: #fff;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .action-btn:hover {
+      transform: scale(1.1);
+    }
+
+    .delete-btn { background: #ff3b30; }
+    .download-btn { background: #34c759; }
+    .fullscreen-btn { background: #007aff; }
+
+    /* ======== VAZIO ======== */
+    .empty-state {
+      text-align: center;
+      padding: 80px 20px;
+      color: rgba(255,255,255,0.8);
+    }
+
+    .empty-state i {
+      font-size: 5rem;
+      opacity: 0.5;
+      margin-bottom: 20px;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: scale(0.95); }
+      to { opacity: 1; transform: scale(1); }
+    }
+
+    @media (max-width: 768px) {
+      header h1 { font-size: 2rem; }
+      .toolbar { flex-direction: column; align-items: stretch; }
+      .view-controls { justify-content: center; }
+      .filter-buttons { justify-content: center; }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="container">
+    <header>
+      <h1>🎬 Galeria de Mídia Ultimate</h1>
+      <p>Gerencie vídeos e áudios com estilo profissional</p>
+    </header>
+
+    <div class="upload-area" onclick="document.getElementById('file-input').click()">
+      <i class="ri-upload-cloud-2-line"></i>
+      <h3>Adicionar Mídia</h3>
+      <p>Clique aqui ou arraste arquivos para enviar</p>
+      <p style="opacity:0.7;font-size:0.9em;">Formatos: MP4, MP3, WAV, MOV, MKV, etc.</p>
+      <input type="file" id="file-input" multiple accept="video/*,audio/*">
+    </div>
+
+    <div class="toolbar">
+      <div class="filter-buttons">
+        <button class="filter-btn active" data-filter="all">Todos</button>
+        <button class="filter-btn" data-filter="video">🎥 Vídeos</button>
+        <button class="filter-btn" data-filter="audio">🎵 Áudios</button>
+      </div>
+
+      <div class="search-box">
+        <input type="text" class="search-input" id="search-input" placeholder="Buscar mídia...">
+        <i class="ri-search-line search-icon"></i>
+      </div>
+
+      <div class="view-controls">
+        <button class="view-btn active" data-view="grid"><i class="ri-layout-grid-line"></i></button>
+        <button class="view-btn" data-view="list"><i class="ri-list-check"></i></button>
+        <select class="sort-select" id="sort-select">
+          <option value="date-desc">Mais recentes</option>
+          <option value="date-asc">Mais antigos</option>
+          <option value="name-asc">Nome (A-Z)</option>
+          <option value="name-desc">Nome (Z-A)</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="gallery grid-view" id="gallery"></div>
+
+    <div class="empty-state" id="empty-state">
+      <i class="ri-folder-music-line"></i>
+      <h2>Nenhuma mídia ainda</h2>
+      <p>Adicione vídeos ou áudios para iniciar sua galeria</p>
+    </div>
+  </div>
+
+  <script>
+    const gallery = document.getElementById('gallery');
+    const fileInput = document.getElementById('file-input');
+    const filterButtons = document.querySelectorAll('.filter-btn');
+    const searchInput = document.getElementById('search-input');
+    const sortSelect = document.getElementById('sort-select');
+    const viewButtons = document.querySelectorAll('.view-btn');
+    const emptyState = document.getElementById('empty-state');
+
+    let mediaFiles = [];
+    let currentFilter = 'all';
+    let currentView = 'grid';
+    let searchTerm = '';
+
+    fileInput.addEventListener('change', e => {
+      const files = e.target.files;
+      for (let file of files) {
+        if (file.type.startsWith('video/') || file.type.startsWith('audio/')) {
+          const url = URL.createObjectURL(file);
+          mediaFiles.push({
+            id: Date.now() + Math.random(),
+            name: file.name,
+            type: file.type.startsWith('video/') ? 'video' : 'audio',
+            url,
+            date: new Date()
+          });
+        }
+      }
+      renderGallery();
+    });
+
+    filterButtons.forEach(btn => {
+      btn.addEventListener('click', () => {
+        filterButtons.forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        currentFilter = btn.dataset.filter;
+        renderGallery();
+      });
+    });
+
+    searchInput.addEventListener('input', e => {
+      searchTerm = e.target.value.toLowerCase();
+      renderGallery();
+    });
+
+    sortSelect.addEventListener('change', renderGallery);
+
+    viewButtons.forEach(btn => {
+      btn.addEventListener('click', () => {
+        viewButtons.forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        currentView = btn.dataset.view;
+        gallery.className = `gallery ${currentView}-view`;
+      });
+    });
+
+    function renderGallery() {
+      gallery.innerHTML = '';
+      let filtered = mediaFiles.filter(m =>
+        (currentFilter === 'all' || m.type === currentFilter) &&
+        m.name.toLowerCase().includes(searchTerm)
+      );
+
+      if (sortSelect.value === 'name-asc') filtered.sort((a,b)=>a.name.localeCompare(b.name));
+      else if (sortSelect.value === 'name-desc') filtered.sort((a,b)=>b.name.localeCompare(a.name));
+      else if (sortSelect.value === 'date-asc') filtered.sort((a,b)=>a.date - b.date);
+      else filtered.sort((a,b)=>b.date - a.date);
+
+      filtered.forEach(media => {
+        const item = document.createElement('div');
+        item.classList.add('media-item');
+
+        const content = document.createElement('div');
+        content.classList.add(`${media.type}-container`);
+        content.innerHTML = media.type === 'video'
+          ? `<video src="${media.url}" controls></video>`
+          : `<audio src="${media.url}" controls></audio>`;
+
+        const info = document.createElement('div');
+        info.classList.add('media-info');
+        info.innerHTML = `<div class="media-title">${media.name}</div>`;
+
+        const actions = document.createElement('div');
+        actions.classList.add('action-buttons');
+        actions.innerHTML = `
+          <button class="action-btn download-btn" title="Baixar"><i class="ri-download-line"></i></button>
+          <button class="action-btn delete-btn" title="Remover"><i class="ri-delete-bin-line"></i></button>
+        `;
+        actions.querySelector('.delete-btn').onclick = () => {
+          mediaFiles = mediaFiles.filter(f => f.id !== media.id);
+          renderGallery();
+        };
+        actions.querySelector('.download-btn').onclick = () => {
+          const a = document.createElement('a');
+          a.href = media.url;
+          a.download = media.name;
+          a.click();
+        };
+
+        item.append(content, info, actions);
+        gallery.appendChild(item);
+      });
+
+      emptyState.style.display = filtered.length ? 'none' : 'block';
+    }
+  </script>
+</body>
+</html>
